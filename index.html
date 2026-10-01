@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fablar — Power over noise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a0a2e;--deep:#1f0d3a;--blush:#fdeaf5;--pink:#ff7ac6;--violet:#7b4dff;--gold:#e8c75a;--lime:#c6f432;--r:16px;
+--sans:'Space Grotesk',system-ui,sans-serif;--serif:'Instrument Serif',Georgia,serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:linear-gradient(165deg,#f7a8da 0%,#c38af0 45%,#6c3fd8 100%) fixed;line-height:1.5;overflow-x:hidden}
+.frame{max-width:1240px;margin:0 auto;padding:84px clamp(12px,4vw,44px) 40px}
+.panel{position:relative;border:1.5px solid;border-radius:var(--r);margin-bottom:18px;overflow:hidden;padding:clamp(28px,6vw,80px)}
+.dark{background:var(--deep);color:#fff;border-color:rgba(255,255,255,.3)}
+.light{background:var(--blush);color:var(--ink);border-color:var(--ink)}
+h1,h2,h3{margin:0;font-weight:700;text-transform:uppercase;letter-spacing:-.04em;line-height:.92}
+h2{font-size:clamp(34px,6.4vw,92px)}
+h3{font-size:clamp(28px,4.4vw,60px)}
+em,.ser{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.02em}
+p{margin:0 0 1em;max-width:52ch}
+.eye{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:22px;display:block}
+.quote{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.6vw,32px);line-height:1.2;max-width:30ch}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+/* buttons + glass */
+.glass{background:rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.3);box-shadow:0 8px 30px rgba(20,0,50,.25)}
+.btn{display:inline-block;padding:15px 26px;border-radius:99px;border:1.5px solid currentColor;font:700 13px var(--sans);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;background:none;color:inherit;transition:background .25s,color .25s,transform .25s}
+.btn.fill{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn:hover{background:var(--pink);color:var(--ink);border-color:var(--pink)}
+/* nav */
+nav{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(1000px,calc(100% - 24px));z-index:50;border-radius:99px;color:#fff;background:rgba(40,12,80,.45)}
+.nb{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 8px 22px}
+.logo{font-weight:700;letter-spacing:.2em;text-decoration:none;font-size:15px}
+.links{display:flex;gap:4px;align-items:center}
+.links a{font-size:13px;text-decoration:none;padding:8px 13px;position:relative;opacity:.8}
+.links a.on{opacity:1}.links a.on::after{content:"";position:absolute;left:50%;bottom:0;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--gold)}
+.links .btn{padding:10px 18px;font-size:11px;margin-left:6px;opacity:1}
+.burger{display:none;background:none;border:0;color:#fff;width:44px;height:44px;cursor:pointer}
+.burger i{display:block;width:20px;height:2px;background:#fff;margin:5px auto;transition:.3s}
+@media(max-width:860px){
+.burger{display:block}.links{position:absolute;top:calc(100% + 8px);left:0;right:0;flex-direction:column;align-items:stretch;padding:14px;border-radius:22px;background:rgba(40,12,80,.88);backdrop-filter:blur(16px);clip-path:inset(0 0 100% 0);opacity:0;transition:clip-path .5s cubic-bezier(.7,0,.2,1),opacity .3s;pointer-events:none}
+nav.open .links{clip-path:inset(0);opacity:1;pointer-events:auto}
+.links a{font-size:22px;padding:12px;opacity:0;transform:translateX(-14px);transition:.4s}
+nav.open .links a{opacity:1;transform:none;transition-delay:calc(var(--i)*60ms + 150ms)}
+.links .btn{text-align:center;margin:8px 0 0;font-size:12px}
+nav.open .burger i:first-child{transform:translateY(3.5px) rotate(45deg)}nav.open .burger i:last-child{transform:translateY(-3.5px) rotate(-45deg)}}
+/* video */
+.vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vbox{position:relative;overflow:hidden;border-radius:10px;border:1.5px solid rgba(255,255,255,.35);min-height:320px}
+.tint::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(108,63,216,.25),rgba(255,122,198,.35));mix-blend-mode:soft-light;pointer-events:none}
+/* hero */
+.hero{min-height:min(92svh,860px);display:flex;flex-direction:column;justify-content:flex-end;padding-top:clamp(90px,14vw,160px)}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(31,13,58,.95) 5%,rgba(60,20,110,.45) 55%,rgba(255,122,198,.2));}
+.hero>*:not(.vid):not(.shade){position:relative;z-index:2}
+.hero h1{font-size:clamp(52px,12.5vw,190px);line-height:.85}
+#noise{display:inline-block;color:var(--pink);filter:blur(16px);opacity:0;animation:focus 1.6s .5s forwards;transition:text-shadow .3s}
+#noise:hover{text-shadow:-6px 0 var(--gold),6px 0 var(--lime);transform:skewX(-6deg)}
+@keyframes focus{to{filter:blur(0);opacity:1}}
+.hero .sub{font-size:clamp(17px,1.8vw,22px);margin-top:26px}
+.hero .q{margin:20px 0 28px;opacity:.85}
+.micro{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:34px;font-size:11px;letter-spacing:.14em;opacity:.75}
+.sig{position:absolute!important;top:clamp(84px,10vw,110px);right:clamp(16px,4vw,44px);padding:12px 16px;border-radius:12px;font:12px/1.5 ui-monospace,monospace;color:#fff}
+.sig b{display:block;color:var(--lime)}.sig b::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--lime);margin-right:8px;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.2}}
+/* philosophy */
+.phil{text-align:center;padding-block:clamp(60px,12vw,150px)}
+.phil h2{font-size:clamp(40px,9.5vw,150px)}
+.phil .quote{margin:40px auto 0}
+#sig{color:var(--violet);display:inline-block;min-width:3.4ch}
+/* about */
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,5vw,70px);align-items:center}
+.list{position:absolute;left:14px;right:14px;bottom:14px;padding:16px 18px;border-radius:10px;font-size:13px;letter-spacing:.06em;display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+/* services */
+.tags{list-style:none;padding:0;margin:22px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.tags li{border:1px solid currentColor;padding:6px 12px;font-size:13px;border-radius:4px}
+.sv{padding:0}
+.sv .in{padding:clamp(28px,5vw,64px)}
+.s1{min-height:560px;display:flex;align-items:flex-end}.s1 .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(31,13,58,.92),rgba(31,13,58,.1) 70%)}
+.s1 .in{position:relative;z-index:2}
+.s2 .split{grid-template-columns:1fr 1fr;gap:0;align-items:stretch}.s2 .vbox{border:0;border-radius:0;min-height:420px}
+.s3 .split{grid-template-columns:1.3fr .7fr;align-items:end}.s3 .vbox{min-height:460px;border-color:var(--ink)}
+.s3 h3{font-size:clamp(40px,7vw,104px)}
+.venn{position:relative;height:clamp(230px,34vw,380px);display:flex;justify-content:center;align-items:center}
+.venn div{position:absolute;width:clamp(170px,26vw,290px);aspect-ratio:1;border-radius:50%;border:1.5px solid #fff;display:grid;place-items:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.venn .o{transform:translateX(-26%);background:rgba(255,122,198,.3);padding-right:30%}
+.venn .f{transform:translateX(26%);background:rgba(123,77,255,.45);padding-left:30%}
+.venn span{position:relative;z-index:2;font-family:var(--serif);font-style:italic;font-size:clamp(17px,2.4vw,28px);color:var(--gold)}
+/* process */
+.track{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:70px;padding-top:34px}
+.track::before,.track::after{content:"";position:absolute;top:0;left:0;height:2px;background:rgba(26,10,46,.2);width:100%}
+.track::after{background:var(--violet);width:calc(var(--p,0)*100%);height:4px;top:-1px}
+.st{opacity:.35;transition:opacity .4s}.st.on{opacity:1}
+.st b{display:block;font-size:40px;letter-spacing:-.04em}.st h3{font-size:22px;margin:6px 0 8px}.st p{font-size:14px}
+@media(max-width:860px){.track{grid-template-columns:1fr;padding:0 0 0 30px;margin-top:40px}
+.track::before,.track::after{width:2px;height:100%;top:0}.track::after{width:4px;height:calc(var(--p,0)*100%);left:-1px}}
+/* work */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:50px}
+.wk{position:relative;display:block;min-height:300px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.3);cursor:none}
+.wk:nth-child(1){grid-column:span 7;min-height:440px}.wk:nth-child(2){grid-column:span 5;margin-top:60px}.wk:nth-child(3){grid-column:span 5}.wk:nth-child(4){grid-column:span 7;margin-top:-40px;min-height:380px}
+.cap{position:absolute;left:12px;bottom:12px;right:12px;padding:12px 14px;border-radius:8px;font-size:13px;z-index:3}
+.cap b{display:block;font-size:17px;text-transform:uppercase;letter-spacing:-.02em}.cap small{opacity:.75;letter-spacing:.1em}
+.wk video{transition:transform .8s}.wk:hover video{transform:scale(1.06)}
+/* representation */
+.rep h2{font-size:clamp(30px,5.6vw,80px);line-height:.98}
+.rep .w{display:inline-block;opacity:.12;transition:opacity .5s}.rep .w.on{opacity:1}
+.band{height:clamp(200px,32vw,380px);margin-top:48px;border-color:var(--ink)}
+/* quirky */
+.quirk{min-height:640px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.quirk h2{position:relative;z-index:2;font-size:clamp(30px,5.6vw,80px);max-width:16ch}
+.quirk p{position:relative;z-index:2;margin-top:24px}
+.fw{position:absolute;font-family:var(--serif);font-style:italic;font-size:clamp(28px,5vw,70px);color:var(--pink);pointer-events:none;will-change:transform;opacity:.85;z-index:1}
+.fw:nth-of-type(even){color:var(--gold)}
+/* faq */
+.faq h2{margin-bottom:40px}
+.q1{border-top:1.5px solid var(--ink)}.q1:last-child{border-bottom:1.5px solid var(--ink)}
+.q1 button{width:100%;text-align:left;background:none;border:0;padding:22px 0;font:500 clamp(17px,2vw,24px) var(--sans);color:inherit;display:flex;justify-content:space-between;gap:20px;cursor:pointer}
+.q1 button i{font-style:normal;transition:transform .35s;font-size:26px;line-height:1}
+.q1.open button i{transform:rotate(45deg)}
+.ans{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s}.q1.open .ans{grid-template-rows:1fr}
+.ans>div{overflow:hidden}.ans p{padding-bottom:22px}
+/* cta */
+.cta{min-height:min(88svh,760px);display:flex;flex-direction:column;justify-content:center}
+.cta .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(31,13,58,.92),rgba(108,63,216,.35))}
+.cta>*:not(.vid):not(.shade){position:relative;z-index:2}
+.cta h2{font-size:clamp(34px,7vw,104px)}.cta .quote{margin:26px 0 34px}
+.arr{display:inline-block;margin-left:10px;animation:nudge 1.4s infinite}@keyframes nudge{50%{transform:translateX(7px)}}
+.loc{margin-top:40px;font-size:11px;letter-spacing:.14em;opacity:.75}
+footer{text-align:center;font-size:12px;color:#fff;padding:14px;letter-spacing:.1em}
+/* cursor */
+#cur{position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px;border-radius:50%;background:var(--gold);z-index:99;pointer-events:none;display:none;mix-blend-mode:difference;transition:width .25s,height .25s,margin .25s}
+#cur.big{width:84px;height:84px;margin:-42px;background:#fff}
+@media(hover:hover) and (pointer:fine){#cur{display:block}}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .9s,transform .9s}.rv.on{opacity:1;transform:none}
+@media(max-width:860px){.split,.s2 .split,.s3 .split{grid-template-columns:1fr}.s2 .vbox{min-height:280px}.grid{display:flex;flex-direction:column}.wk{margin:0!important;min-height:280px!important;cursor:pointer}.sig{display:none}.list{position:static;margin-top:12px;border-color:rgba(255,255,255,.3)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}#noise{filter:none;opacity:1}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<nav class="glass" id="nav"><div class="nb"><a class="logo" href="#top">FABLAR</a>
+<button class="burger" id="bg" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+<div class="links" id="links"></div></div></nav>
+
+<main class="frame" id="top">
+<section class="panel dark hero" id="hero"><video class="vid" data-v="a" data-eager muted loop playsinline aria-hidden="true"></video><div class="shade"></div>
+<div class="sig glass"><b>SIGNAL DETECTED</b>ATTENTION_TO_REVENUE.LOG</div>
+<span class="eye">Events × Brand Activation × Digital</span>
+<h1>Power over <span id="noise">noise.</span></h1>
+<p class="sub">We create conversations that move brands forward. From digital campaigns to unforgettable experiences, Fablar turns sharp ideas into meaningful brand connections and measurable growth.</p>
+<p class="quote q">“Good marketing makes the brand look smart. Great marketing makes the customer feel understood.”</p>
+<div><a class="btn fill mag" href="#contact">Start the conversation</a> <a class="btn mag" href="#work">See the work</a></div>
+<div class="micro"><span>CLUTTER-FREE IDEATION</span><span>FULL-FUNNEL EXECUTION</span><span>GURUGRAM, INDIA</span></div></section>
+
+<section class="panel light phil"><h2>Less <span id="sig">noise</span>.<br>More <em>meaning.</em></h2><p class="quote">“Attention is easy to buy. Being remembered is the real work.”</p></section>
+
+<section class="panel dark" id="about"><div class="split"><div>
+<span class="eye">Who we are</span><h2 class="rv">Ideas with intent.<br><em>Experiences with impact.</em></h2><br>
+<p>We are Fablar. A creative growth partner for brands that want to be remembered.</p>
+<p>We bring together strategy, storytelling, digital marketing, and event execution to create meaningful connections between brands and people.</p>
+<p>From the first idea to the final interaction, we turn clutter-free thinking into work that earns attention and drives action.</p></div>
+<div class="vbox tint" style="min-height:520px"><video class="vid" data-v="b" data-par muted loop playsinline aria-label="A team joins hands over a desk of campaign work"></video>
+<div class="list glass"><span>01 Think clearly</span><span>02 Create boldly</span><span>03 Execute precisely</span><span>04 Measure meaningfully</span></div></div></div></section>
+
+<section id="services"><div class="panel light" style="margin-bottom:18px"><span class="eye">What we do</span><h2>Four disciplines.<br><em>One growth story.</em></h2><p class="quote" style="margin-top:28px">“A great idea deserves more than attention. It deserves execution.”</p></div>
+
+<div class="panel dark sv s1"><video class="vid" data-v="a" style="object-position:70% 50%" muted loop playsinline aria-label="Audience with hands raised at a live show"></video><div class="shade"></div><div class="in">
+<span class="eye">Brand activations</span><h3>Make the brand<br><em>unforgettable.</em></h3><p style="margin-top:20px">Creative activations that turn audiences into participants and moments into memories.</p><ul class="tags" data-s="0"></ul></div></div>
+
+<div class="panel dark sv s2"><div class="split"><div class="vbox tint"><video class="vid" data-v="a" style="object-position:15% 40%;transform:scale(1.5)" muted loop playsinline aria-label="Stage lights and crowd at an event"></video></div><div class="in">
+<span class="eye">Event management</span><h3>Every detail.<br><em>One experience.</em></h3><p style="margin-top:20px">From planning and production to on-ground execution, we bring events to life without losing sight of the brand.</p><ul class="tags" data-s="1"></ul></div></div></div>
+
+<div class="panel light sv s3"><div class="split"><div class="in"><span class="eye">Digital marketing</span><h3>Turn attention<br><em>into action.</em></h3><p style="margin-top:20px">Research-led digital campaigns that connect the right message with the right audience.</p><ul class="tags" data-s="2"></ul></div>
+<div class="vbox" style="margin:14px"><video class="vid" data-v="b" style="object-position:95% 30%;transform:scale(1.8);transform-origin:90% 25%" muted loop playsinline aria-label="Monitor showing a digital marketing design"></video></div></div></div>
+
+<div class="panel dark sv"><div class="in"><span class="eye">Integrated strategy</span><h3>One brand.<br><em>Every touchpoint.</em></h3>
+<div class="venn" role="img" aria-label="Offline experiences and online campaigns overlap in one unified strategy"><div class="o">Offline</div><div class="f">Online</div><span>one voice</span></div>
+<p style="margin:0 auto;text-align:center">We connect online campaigns and offline experiences through a unified strategy and voice.</p><ul class="tags" style="justify-content:center" data-s="3"></ul></div></div></section>
+
+<section class="panel light" id="process"><span class="eye">Our process</span><h2>Research first.<br><em>Results always.</em></h2><p style="margin-top:24px">Every project begins with a question, not a mood board.</p><div class="track" id="track"></div></section>
+
+<section class="panel dark" id="work"><span class="eye">The work</span><h2>Ideas made <em>tangible.</em></h2><p style="margin-top:20px">A selection of campaigns, experiences, and creative work.</p><div class="grid" id="grid"></div></section>
+
+<section class="panel light rep" id="representation"><span class="eye">What we believe</span><h2 id="rp">People should see themselves in the stories brands tell.</h2><p class="quote" style="margin-top:34px">“Representation isn’t a checkbox. It’s a responsibility.”</p>
+<p>We believe meaningful communication begins with understanding people. Our creative decisions should reflect real audiences, authentic experiences, and thoughtful storytelling.</p>
+<div class="vbox tint band"><video class="vid" data-v="b" data-par style="object-position:50% 55%" muted loop playsinline aria-label="Hands coming together in a creative team"></video></div></section>
+
+<section class="panel dark quirk" id="quirk"><h2>If you’re doing marketing right, you’re a little <em>crazy</em> about it.</h2><p>Let’s sell your audience on something great — like magic, backed by strategy.</p></section>
+
+<section class="panel light faq" id="faq"><h2>No cute.<br><em>Just clear.</em></h2><div id="qs"></div></section>
+
+<section class="panel dark cta" id="contact"><video class="vid" data-v="a" muted loop playsinline aria-hidden="true"></video><div class="shade"></div>
+<h2>Have an idea?<br><em>Let’s give it a life of its own.</em></h2><p class="quote">“You bring the ambition. We’ll bring the ideas, strategy, and execution.”</p>
+<div><a class="btn fill mag" id="mail" href="#">Start a conversation<span class="arr">→</span></a></div><div class="loc">GURUGRAM, INDIA — WORKING ACROSS INDIA</div></section>
+</main>
+<footer>© FABLAR</footer>
+
+<script>
+/* ===== EDIT ME: content + media ===== */
+const VA="{{VA}}",VB="{{VB}}",PA="{{PA}}",PB="{{PB}}";   // compressed clips + posters
+const C={email:"hello@your-domain.com",
+nav:[["Representation","representation"],["Work","work"],["Services","services"],["About","about"],["FAQ","faq"]],
+services:[["Experiential Campaigns","Retail Activations","Product Launches","Audience Engagement"],["Corporate Events","Product Launches","Conferences","Production","Vendor Coordination"],["Performance Marketing","Social Media","Content Strategy","Campaign Analytics"],["Brand Positioning","Campaign Planning","Audience Research","Digital and Offline Integration"]],
+process:[["Discover","Understand the brand, audience, market, and opportunity."],["Define","Set clear objectives, measurable goals, and a focused strategy."],["Create","Develop the campaign idea, creative direction, and execution plan."],["Execute","Bring the strategy to life across digital platforms and physical spaces."],["Measure","Track performance, learn from outcomes, and refine what comes next."]],
+work:[{t:"Project title — placeholder",c:"Brand Activation",d:"Short description goes here.",v:"a",pos:"60% 50%"},{t:"Project title — placeholder",c:"Digital Campaign",d:"Short description goes here.",v:"b",pos:"90% 30%"},{t:"Project title — placeholder",c:"Integrated Strategy",d:"Short description goes here.",v:"b",pos:"30% 60%"},{t:"Project title — placeholder",c:"Event Management",d:"Short description goes here.",v:"a",pos:"20% 40%"}],
+faq:[["What services does Fablar offer?","Digital marketing, event management, brand activations, and integrated brand strategy. Together or one at a time."],["Do you manage both online and offline campaigns?","Yes. We plan them as one story, so the digital work and the on-ground work say the same thing."],["How do you measure campaign success?","We agree on goals at the start, track them through the campaign, and report back on what worked and what to change."],["Where do you operate?","We’re based in Gurugram, India, and work with brands across India."],["Can we work with you on a single event or campaign?","Absolutely. Plenty of relationships start with one project."]]};
+/* ===================================== */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const SRC={a:[VA,PA],b:[VB,PB]};
+// nav
+$('#links').innerHTML=C.nav.map((n,i)=>`<a href="#${n[1]}" style="--i:${i}" data-s="${n[1]}">${n[0]}</a>`).join('')+'<a class="btn fill" href="#contact" style="--i:5">Start a Conversation</a>';
+$('#bg').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#bg').setAttribute('aria-expanded',o)};
+$$('#links a').forEach(a=>a.addEventListener('click',()=>$('#nav').classList.remove('open')));
+$('#mail').href='mailto:'+C.email;
+// lists
+$$('[data-s]',document.body).forEach(u=>{if(u.tagName==='UL')u.innerHTML=C.services[u.dataset.s].map(s=>`<li>${s}</li>`).join('')});
+$('#track').innerHTML=C.process.map((p,i)=>`<div class="st"><b>0${i+1}</b><h3>${p[0]}</h3><p>${p[1]}</p></div>`).join('');
+$('#grid').innerHTML=C.work.map(w=>`<a class="wk" href="#contact" data-w><video class="vid" data-v="${w.v}" data-hover style="object-position:${w.pos}" muted loop playsinline aria-hidden="true"></video><div class="cap glass"><small>${w.c}</small><b>${w.t}</b>${w.d}</div></a>`).join('');
+$('#qs').innerHTML=C.faq.map((f,i)=>`<div class="q1"><button aria-expanded="false" aria-controls="a${i}">${f[0]}<i>+</i></button><div class="ans" id="a${i}"><div><p>${f[1]}</p></div></div></div>`).join('');
+$$('.q1 button').forEach(b=>b.onclick=()=>{const q=b.parentNode,o=!q.classList.contains('open');$$('.q1').forEach(x=>{x.classList.remove('open');$('button',x).setAttribute('aria-expanded',false)});if(o){q.classList.add('open');b.setAttribute('aria-expanded',true)}});
+// videos: load lazily, pause offscreen
+const vio=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;
+ if(e.isIntersecting){if(!v.src){v.src=SRC[v.dataset.v][0]}if(!RM&&!('hover' in v.dataset))v.play().catch(()=>{})}else v.pause()}),{rootMargin:'200px'});
+$$('video[data-v]').forEach(v=>{v.poster=SRC[v.dataset.v][1];vio.observe(v)});
+$$('[data-w]').forEach(w=>{const v=$('video',w),go=()=>{if(!RM){if(!v.src)v.src=SRC[v.dataset.v][0];v.play().catch(()=>{})}},st=()=>v.pause();
+ w.addEventListener('mouseenter',go);w.addEventListener('focus',go);w.addEventListener('mouseleave',st);w.addEventListener('blur',st);w.addEventListener('touchstart',go,{passive:true})});
+// reveals
+const rio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');rio.unobserve(e.target)}}),{threshold:.25});
+$$('.rv').forEach(e=>rio.observe(e));
+// word-by-word reveal
+const rp=$('#rp');rp.innerHTML=rp.textContent.split(' ').map(w=>`<span class="w">${w}</span>`).join(' ');
+// active section
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('#links a[data-s]').forEach(a=>a.classList.toggle('on',a.dataset.s===e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
+C.nav.forEach(n=>so.observe($('#'+n[1])));
+// scroll effects
+const sig=$('#sig'),track=$('#track'),ws=$$('.rep .w'),pars=$$('[data-par]'),SG='SIGNAL',NZ='noise';
+const clamp=(x)=>Math.max(0,Math.min(1,x));
+function tick(){const H=innerHeight;
+ let r=sig.getBoundingClientRect();let p=clamp((H*.85-r.top)/(H*.5));
+ sig.textContent=RM?SG:[...SG].map((c,i)=>p>(i+1)/(SG.length+1)?c:(NZ[i]||'').toUpperCase()).join('');
+ r=track.getBoundingClientRect();p=clamp((H*.7-r.top)/Math.max(r.height,H*.4));track.style.setProperty('--p',p);
+ $$('.st').forEach((s,i)=>s.classList.toggle('on',p>=i/5-.02));
+ r=rp.getBoundingClientRect();p=clamp((H*.85-r.top)/(H*.6));ws.forEach((w,i)=>w.classList.toggle('on',RM||p>i/ws.length));
+ if(!RM)pars.forEach(v=>{const b=v.parentNode.getBoundingClientRect();v.style.transform=`translateY(${(b.top+b.height/2-H/2)*-.06}px) scale(1.15)`});}
+addEventListener('scroll',()=>requestAnimationFrame(tick),{passive:true});addEventListener('resize',tick);tick();
+// cursor + magnetic buttons
+const cur=$('#cur');let mx=innerWidth/2,my=innerHeight/2;
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.transform=`translate(${mx}px,${my}px)`;cur.classList.toggle('big',!!e.target.closest('[data-w]'))});
+$$('.mag').forEach(b=>{b.addEventListener('mousemove',e=>{if(RM)return;const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.25}px,${(e.clientY-r.top-r.height/2)*.35}px)`});b.addEventListener('mouseleave',()=>b.style.transform='')});
+// quirky floating words, pushed away by the cursor
+const qs=$('#quirk'),ws2=['wild','bold','curious','sharp','loud','magic','unhinged','clear'].map((t,i)=>{const s=document.createElement('span');s.className='fw';s.textContent=t;s.setAttribute('aria-hidden','true');qs.appendChild(s);
+ return{s,x:(i%4)*24+6,y:i<4?8+i*6:70-i*2,vx:0,vy:0,ph:i*1.7}});
+let t0=0;function loop(t){const R=qs.getBoundingClientRect();
+ ws2.forEach(w=>{const bx=w.x/100*R.width,by=w.y/100*R.height+(RM?0:Math.sin(t/1400+w.ph)*14);
+  let dx=0,dy=0;if(!RM){const ex=bx+R.left-mx,ey=by+R.top-my,d=Math.hypot(ex,ey)||1;if(d<200){dx=ex/d*(200-d)*.9;dy=ey/d*(200-d)*.9}}
+  w.vx+=(dx-w.vx)*.12;w.vy+=(dy-w.vy)*.12;w.s.style.transform=`translate(${bx+w.vx}px,${by+w.vy}px) rotate(${Math.sin(w.ph)*6}deg)`});
+ if(R.bottom>0&&R.top<innerHeight)requestAnimationFrame(loop);else setTimeout(()=>requestAnimationFrame(loop),300)}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
